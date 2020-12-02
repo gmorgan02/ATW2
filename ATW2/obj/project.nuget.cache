@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "RDvLebdrOzSHST+sochc0/T3dvTr+yb3FebeNUNVncGSZvKn7WscnRvn19YggnGmJH6wvXQB49qStFOAGIJZ4Q==",
+  "dgSpecHash": "YbqWIiB6ES4iCT5EDu6zAllFZGhy7wzuzY46JxUIXPCxciEjd2DJeN+eRw0pRCblBeN9w4Ghp7gLFrFjQXKpLQ==",
   "success": true,
-  "projectFilePath": "C:\\Git.Projects\\ATW2\\ATW2\\ATW2.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\georgem\\source\\repos\\ATW2\\ATW2\\ATW2.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\georgem\\.nuget\\packages\\newtonsoft.json\\12.0.3\\newtonsoft.json.12.0.3.nupkg.sha512"
+  ],
   "logs": []
 }
