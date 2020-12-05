@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ATW2.Models
 {
-    public class Card : Deck
+    public class Card 
     { 
         [JsonProperty("image")]
         public string Image { get; set; }

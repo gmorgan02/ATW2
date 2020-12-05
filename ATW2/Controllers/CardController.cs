@@ -26,8 +26,8 @@ namespace ATW2.Controllers
         {
             var client = new HttpClient();
             var ApiEndpoint = _config.GetValue<string>("Api:Url") + "new/shuffle/?deck_count=1";
-            var content = await client.GetStringAsync(ApiEndpoint);
-            Deck deck = JsonConvert.DeserializeObject<Deck>(content);
+            var response = await client.GetStringAsync(ApiEndpoint);
+            Deck deck = JsonConvert.DeserializeObject<Deck>(response);
            
             return new string[] { "value1", "value2" };
         }
@@ -38,17 +38,22 @@ namespace ATW2.Controllers
         {
             var client = new HttpClient();
             var ApiEndpoint = _config.GetValue<string>("Api:Url") + deckId + "/draw/?count=2";
-            var content = await client.GetStringAsync(ApiEndpoint);
-            var t = content.Split(":");
-            Card card = JsonConvert.DeserializeObject<Card>(content);
+            var response = await client.GetStringAsync(ApiEndpoint);
+            
+            CardJson cards = JsonConvert.DeserializeObject<CardJson>(response);
             
             return "value";
         }
 
-        // POST api/<CardController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        // GET api/<CardController>/{deckId}/shuffle
+        [HttpGet("{deckId}/shuffle")]
+        public async Task<string> ShuffleDeckAsync(string deckId)
         {
+            var client = new HttpClient();
+            var ApiEndpoint = _config.GetValue<string>("Api:Url") + deckId + "/shuffle";
+            var response = await client.GetStringAsync(ApiEndpoint);
+
+            return "";
         }
 
         // PUT api/<CardController>/5
