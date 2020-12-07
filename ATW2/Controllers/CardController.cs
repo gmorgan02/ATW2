@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace ATW2.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class CardController : ControllerBase
     {
@@ -33,11 +33,11 @@ namespace ATW2.Controllers
         }
 
         // GET api/<CardController>/{deckId}/draw
-        [HttpGet("{deckId}/draw")]
-        public async Task<string> GetCardAsync(string deckId)
+        [HttpGet("{deckId}/draw/{numberOfCards}")]
+        public async Task<string> GetCardAsync(string deckId, string numberOfCards)
         {
             var client = new HttpClient();
-            var ApiEndpoint = _config.GetValue<string>("Api:Url") + deckId + "/draw/?count=2";
+            var ApiEndpoint = _config.GetValue<string>("Api:Url") + deckId + "/draw/?count=" + numberOfCards;
             var response = await client.GetStringAsync(ApiEndpoint);
             
             CardJson cards = JsonConvert.DeserializeObject<CardJson>(response);
@@ -54,18 +54,6 @@ namespace ATW2.Controllers
             var response = await client.GetStringAsync(ApiEndpoint);
 
             return "";
-        }
-
-        // PUT api/<CardController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<CardController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }
