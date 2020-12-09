@@ -1,0 +1,36 @@
+﻿@model IEnumerable<ATW2.Models.User>
+
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<h1>Manage Users</h1>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Email</th>
+                <th scope="col">Role</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+            <tr>
+                <td>@Html.Encode(user.Id)</td>
+                <td>@Html.Encode(user.Email)</td>
+                <td>@Html.Encode(user.Role)</td>
+                <td><a asp-controller="User" asp-action="Edit" asp-route-id="@user.Id">Edit</a></td>
+                <td><a asp-controller="User" asp-action="Delete" asp-route-id="@user.Id">Delete</a></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <input type="button" class="btn btn-primary"  value="Add new user" onclick="location.href='@Url.Action("Create", "User")'" />
+
+</div>

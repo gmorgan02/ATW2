@@ -18,16 +18,27 @@ a {
   border-color: #1861ac;
 }
 
+.margin-top-5 {
+    margin-top: 5%;
+}
+
+.card {
+    min-width: 250px;
+}
+
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
   color: #fff;
   background-color: #1b6ec2;
   border-color: #1861ac;
 }
 
+.btn-login {
+    margin-top: 5%;
+}
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 @media (min-width: 768px) {
   html {
@@ -69,3 +80,4 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+

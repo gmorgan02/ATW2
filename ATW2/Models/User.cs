@@ -1,11 +1,9 @@
 ﻿using ATW2.Enum;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ATW2.Models
 {
+    [Serializable]
     public class User
     {
         public int Id { get; set; }

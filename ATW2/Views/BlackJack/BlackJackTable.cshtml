@@ -2,20 +2,112 @@
 @{
     ViewData["Title"] = "BlackJackView";
 }
-
+<head>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+</head>
 <h1>BlackJackTableView</h1>
 
 <div class="container">
     <div class="card">
-        <div class="card-header">test</div>
-        <div class="card-body">checks</div>
+        <div class="card-header" id="head">Dealers Hand</div>
+        <div class="card-body"><img class="deckcard" id="DealerCard1" /><img class="deckcard" id="DealerCard2" /></div>
     </div>
 
-    <button class="btn-primary text-center">Draw hand</button>
+    <div class="card margin-top-5">
+        <div class="card-header" id="head">Your Hand</div>
+        <div class="card-body"><img class="deckcard" id="UserCard1" /><img class="deckcard" id="UserCard2" /><img class="deckcard" id="UserCard3" /><img class="deckcard" id="UserCard4" /><img class="deckcard" id="UserCard5" /><img class="deckcard" id="UserCard6" /><img class="deckcard" id="UserCard7" /><img class="deckcard" id="UserCard8" /><img class="deckcard" id="UserCard9" /><img class="deckcard" id="UserCard10" /><img class="deckcard" id="UserCard11" /></div>
+    </div>
+
+    <input type="button" class="btn btn-primary" value="Hit Me" onclick="hitMe()" />
+    <input type="button" class="btn btn-primary" value="Hold" onclick="hold()" />
 
 </div>
 
+TODO
+
+    Add values and blackjack rules (21 < bust) 2h
+    Track cards do percentage of bust chance (Number of unknown cards left that would make you go bust / Number of unknown cards) 2h
+    test plan 2h
+    bugs 2h
+    publish 2h 
+    
 
 <script>
-    
+    var deck;
+    var userCard;
+    var card2;
+
+    $(document).ready(function () {
+ 
+        $.ajax({
+            url: "https://localhost:44386/Card",
+            type: "GET",
+            success: function (result) {
+                deck = { Id: result[0], cardsRemaining: result[1], shuffled: result[2], success: result[3] };
+
+                $.ajax({
+                    
+                    url: "https://localhost:44386/Card/" + deck.Id + "/draw/2",
+                    type: "GET",
+                    success: function (result) {
+                        var card1 = { Code: result[0], Image: result[1], Suit: result[2], Value: result[3] }
+                        card2 = { Code: result[4], Image: result[5], Suit: result[6], Value: result[7] }
+
+                        document.getElementById("DealerCard1").src = card1.Image;
+
+                        console.log(card1.Value);
+                        console.log(card2.Value);
+                    }
+                })            
+
+                $.ajax({
+
+                    url: "https://localhost:44386/Card/" + deck.Id + "/draw/2",
+                    type: "GET",
+                    success: function (result) {
+                        var card1 = { Code: result[0], Image: result[1], Suit: result[2], Value: result[3] }
+                        var card2 = { Code: result[4], Image: result[5], Suit: result[6], Value: result[7] }
+
+                        document.getElementById("UserCard1").src = card1.Image;
+                        document.getElementById("UserCard2").src = card2.Image;
+                        console.log(card1.Value);
+                        console.log(card2.Value);
+                    }
+                })   
+            }
+        })
+    })
+
+    function hitMe() {
+        $.ajax({
+            url: "https://localhost:44386/Card/" + deck.Id + "/draw/1",
+            type: "GET",
+            success: function (result) {
+                var newCard = { Code: result[0], Image: result[1], Suit: result[2], Value: result[3] }
+
+
+                if (userCard == null) {
+                    userCard = 3;
+                }
+                else {
+                    userCard++
+                }
+                newCard.Value
+
+                document.getElementById("UserCard" + userCard.toString()).src = newCard.Image;
+
+            }
+        })   
+    }
+
+    function hold() {
+        document.getElementById("DealerCard2").src = card2.Image;
+
+        setTimeout(() => { location.reload(); }, 5000);
+    }
+
+    function dealerTotal() {
+
+    }
+
 </script>

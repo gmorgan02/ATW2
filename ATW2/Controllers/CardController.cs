@@ -20,7 +20,7 @@ namespace ATW2.Controllers
         {
             _config = config;
         }
-        // GET: api/<CardController>
+        // GET: <CardController>
         [HttpGet]
         public async Task<IEnumerable<string>> GetDeckAsync()
         {
@@ -28,24 +28,76 @@ namespace ATW2.Controllers
             var ApiEndpoint = _config.GetValue<string>("Api:Url") + "new/shuffle/?deck_count=1";
             var response = await client.GetStringAsync(ApiEndpoint);
             Deck deck = JsonConvert.DeserializeObject<Deck>(response);
+
+            if (!deck.Success)
+            {
+                return new string[] { "Error" };
+            }
            
-            return new string[] { "value1", "value2" };
+            return new string[] { deck.Id, deck.Remaining.ToString(), deck.Shuffled.ToString(), deck.Success.ToString() };
         }
 
-        // GET api/<CardController>/{deckId}/draw
-        [HttpGet("{deckId}/draw/{numberOfCards}")]
-        public async Task<string> GetCardAsync(string deckId, string numberOfCards)
+        // GET <CardController>/{deckId}/draw
+        [HttpGet("{deckId}/draw/2")]
+        public async Task<IEnumerable<string>> GetCardsAsync(string deckId)
         {
             var client = new HttpClient();
-            var ApiEndpoint = _config.GetValue<string>("Api:Url") + deckId + "/draw/?count=" + numberOfCards;
+            var ApiEndpoint = _config.GetValue<string>("Api:Url") + deckId + "/draw/?count=2";
             var response = await client.GetStringAsync(ApiEndpoint);
             
             CardJson cards = JsonConvert.DeserializeObject<CardJson>(response);
-            
-            return "value";
+
+            if (!cards.Success)
+            {
+                return new string[] { "Error" };
+            }
+
+
+            Card card1 = new Card();
+            Card card2 = new Card();
+
+            card1.Code = cards.Cards[0].Code;
+            card1.Image = cards.Cards[0].Image;
+            card1.Suit = cards.Cards[0].Suit;
+            card1.Value = cards.Cards[0].Value;
+
+            card2.Code = cards.Cards[1].Code;
+            card2.Image = cards.Cards[1].Image;
+            card2.Suit = cards.Cards[1].Suit;
+            card2.Value = cards.Cards[1].Value;
+
+            return new string[] { card1.Code, card1.Image, card1.Suit, card1.Value, card2.Code, card2.Image, card2.Suit, card2.Value };            
         }
 
-        // GET api/<CardController>/{deckId}/shuffle
+        // GET <CardController>/{deckId}/draw
+        [HttpGet("{deckId}/draw/1")]
+        public async Task<IEnumerable<string>> GetCardAsync(string deckId)
+        {
+            var client = new HttpClient();
+            var ApiEndpoint = _config.GetValue<string>("Api:Url") + deckId + "/draw/?count=1";
+            var response = await client.GetStringAsync(ApiEndpoint);
+
+            CardJson cards = JsonConvert.DeserializeObject<CardJson>(response);
+
+            if (!cards.Success)
+            {
+                return new string[] { "Error" };
+            }
+
+
+            Card card1 = new Card();
+            Card card2 = new Card();
+
+            card1.Code = cards.Cards[0].Code;
+            card1.Image = cards.Cards[0].Image;
+            card1.Suit = cards.Cards[0].Suit;
+            card1.Value = cards.Cards[0].Value;
+
+
+            return new string[] { card1.Code, card1.Image, card1.Suit, card1.Value };
+        }
+
+        // GET <CardController>/{deckId}/shuffle
         [HttpGet("{deckId}/shuffle")]
         public async Task<string> ShuffleDeckAsync(string deckId)
         {

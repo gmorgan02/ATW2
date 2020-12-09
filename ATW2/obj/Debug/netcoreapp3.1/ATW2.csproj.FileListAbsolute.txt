@@ -60,7 +60,6 @@ C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\scopedcss\bundle\ATW2.styles.c
 C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\ATW2.TagHelpers.input.cache
 C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\ATW2.TagHelpers.output.cache
 C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\ATW2.RazorCoreGenerate.cache
-C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\Home\Index.cshtml.g.cs
 C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\Shared\Error.cshtml.g.cs
 C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\Shared\_Layout.cshtml.g.cs
 C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\Shared\_ValidationScriptsPartial.cshtml.g.cs
@@ -432,14 +431,7 @@ C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\tr\Microsoft.CodeAnalysis.Work
 C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\BlackJack\BlackJackTable.cshtml.g.cs
-C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\System.Data.SqlClient.dll
-C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\runtimes\win-arm64\native\sni.dll
-C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\runtimes\win-x64\native\sni.dll
-C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\sni.dll
-C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
-C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
 C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\User\Login.cshtml.g.cs
-C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\User\ManageUser.cshtml.g.cs
 C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\BouncyCastle.Crypto.dll
 C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\Google.Protobuf.dll
 C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\K4os.Compression.LZ4.dll
@@ -454,3 +446,7 @@ C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\System.Configuration.Configura
 C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\System.Security.Cryptography.ProtectedData.dll
 C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\System.Xml.XPath.XmlDocument.dll
 C:\Git.Projects\ATW2\ATW2\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
+C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\User\Edit.cshtml.g.cs
+C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\User\Create.cshtml.g.cs
+C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\User\Manage.cshtml.g.cs
+C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\User\Delete.cshtml.g.cs
