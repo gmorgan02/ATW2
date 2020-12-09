@@ -6,6 +6,7 @@
 <div class="container">
     <div class="card">
         <div class="card-header" id="dealerHeader">Dealers Hand</div>
+        @*images to be populated by Javascript below*@
         <div class="card-body"><img class="deckcard" id="DealerCard1" /><img class="deckcard" id="DealerCard2" /><img class="deckcard" id="DealerCard3" /><img class="deckcard" id="DealerCard4" /><img class="deckcard" id="DealerCard5"  /><img class="deckcard" id="DealerCard6"  /><img class="deckcard" id="DealerCard7"  /><img class="deckcard" id="DealerCard8" /><img class="deckcard" id="DealerCard9"  /><img class="deckcard" id="DealerCard10"  /><img class="deckcard" id="DealerCard11" /></div>
     </div>
 
@@ -30,13 +31,13 @@
     var viewedCards;
 
     $(document).ready(function () {
- 
+    //Ajax query to get a deck for blackjack from the deckofcards api
         $.ajax({
             url: "/Card",
             type: "GET",
             success: function (result) {
                 deck = { Id: result[0], cardsRemaining: result[1], shuffled: result[2], success: result[3] };
-
+                //on success a following ajax call is made to draw the first two cards for the dealer
                 $.ajax({
                     
                     url: "/Card/" + deck.Id + "/draw/2",
@@ -45,6 +46,7 @@
                         var dealerCard1 = { Code: result[0], Image: result[1], Suit: result[2], Value: result[3] }
                         dealerCard2 = { Code: result[4], Image: result[5], Suit: result[6], Value: result[7] }
 
+                        //For Ace, Queen, King and Jack cards the values of these are set to 10 for adding together for total hand count. (yes ace is wrong for BlackJack rules)
                         if (dealerCard1.Value == "ACE" || dealerCard1.Value == "KING" || dealerCard1.Value == "QUEEN" || dealerCard1.Value == "JACK") {
                             dealerCard1.Value = 10
                         }
@@ -52,29 +54,34 @@
                             dealerCard2.Value = 10
                         }
 
+                        //sets the first dealers card to their hand and displays image passed back from DeckofCards Api
                         document.getElementById("DealerCard1").src = dealerCard1.Image;
 
+                        //set dealer cards to int
                         var card1IntValue = parseInt(dealerCard1.Value);
                         var card2IntValue = parseInt(dealerCard2.Value);
 
+                        //parse the first visable card value into the viewedCards array for caculatingBustPercentage
                         viewedCards = [card1IntValue];
 
                         dealerTotal = card1IntValue + card2IntValue;
                     }
                 })            
-
+                //ajax request to get the first two cards for the user
                 $.ajax({
 
                     url: "/Card/" + deck.Id + "/draw/2",
                     type: "GET",
                     success: function (result) {
+                        //From the results set the returned values into card1 and card2 
                         var card1 = { Code: result[0], Image: result[1], Suit: result[2], Value: result[3] }
                         var card2 = { Code: result[4], Image: result[5], Suit: result[6], Value: result[7] }
 
+                        //sets the images returned by the deckofcards api to the users hand on the page
                         document.getElementById("UserCard1").src = card1.Image;
                         document.getElementById("UserCard2").src = card2.Image;
                        
-
+                        //For Ace, Queen, King and Jack cards the values of these are set to 10 for adding together for total hand count. (yes ace is wrong for BlackJack rules)
                         if (card1.Value == "ACE" || card1.Value == "KING" || card1.Value == "QUEEN" || card1.Value == "JACK") {
                             card1.Value = 10
                         }
@@ -82,14 +89,16 @@
                             card2.Value = 10
                         }
 
+                        //set user cards to int
                         var card1IntValue = parseInt(card1.Value);
                         var card2IntValue = parseInt(card2.Value);
 
+                        //sets the total count of the users hand this variable is also used in the calculation of the precentage to go bust
                         userTotal = card1IntValue + card2IntValue;
 
+                        //adds the users cards to the viewedCards Array for the calculation to go bust percentage
                         viewedCards.push(card1IntValue, card2IntValue);
 
-                        document.getElementById("userHeader").innerText = "Your Hand - " + userTotal.toString();
                         caculateBustProbability();
                     }
                 })   
@@ -97,6 +106,7 @@
         })
     })
 
+    //function is called when user clicks the hit me button which draws one card
     function hitMe() {
         $.ajax({
             url: "/Card/" + deck.Id + "/draw/1",
@@ -106,27 +116,35 @@
 
 
                 if (userCard == null) {
+                    //starts the user card at three as the first two cards are already in the user's hand
                     userCard = 3;
                 }
                 else {
                     userCard++
                 }
-
+                //For Ace, Queen, King and Jack cards the values of these are set to 10 for adding together for total hand count. (yes ace is wrong for BlackJack rules)
                 if (newCard.Value == "ACE" || newCard.Value == "KING" || newCard.Value == "QUEEN" || newCard.Value == "JACK") {
                     newCard.Value = 10
                 }
 
+                //makes the newly drawn card visible to the user setting it in one of the user cards already defined in html
+                //There are 11 cards at that is is the max number of cards a user can draw in standard blackjack without going bust
                 document.getElementById("UserCard" + userCard.toString()).src = newCard.Image;
 
+                //Gets the header text for the user hand which contains the count of the current hand
                 var userHandText = document.getElementById("userHeader").innerText;
 
+                //pulls the user hand total from the header text
                 var matches = userHandText.match(/(\d+)/);
-
-                var userTotal = parseInt(matches[0]);
+                //assigns the above to the userTotal variable
+                userTotal = parseInt(matches[0]);
+                //sets the newcard value to int for addition 
                 var newCardIntValue = parseInt(newCard.Value);
 
+                //adds the value of the new card to the existing total
                 userTotal = newCardIntValue + userTotal;
 
+                //adds the new card to the viewedCards array for the percentage to bust calculation
                 viewedCards.push(newCardIntValue);
 
                 if (userTotal > 21) {
@@ -135,16 +153,19 @@
                     hold();
                 }
                 else {
-                    document.getElementById("userHeader").innerText = "Your Hand - " + userTotal.toString();
+                    
                     caculateBustProbability();
                 }
             }
         })
     } 
 
+    //function is called when the user click the hold button when they no longer wish to draw another card.
     function hold() {
+        //shows the dealers second card
         document.getElementById("DealerCard2").src = dealerCard2.Image;
 
+        //if the dealer is below 16 they have to draw another card as per blackjack rules
         if (dealerTotal < 16) {
             document.getElementById("dealerHeader").innerText = "Dealer Hand - " + dealerTotal.toString();
             dealerHitMe();
@@ -155,6 +176,8 @@
         setTimeout(() => { location.reload(); }, 5000);
     }
 
+    //dealers hit me function this is diferent to the user hitme function as it calls the hold function after, returns the cards to the dealers hands and does not affect the Percentage to bust calculation as the 
+    //user is finished their turn before this method is called
     function dealerHitMe() {
         $.ajax({
             url: "/Card/" + deck.Id + "/draw/1",
@@ -164,22 +187,27 @@
 
 
                 if (dealerCard == null) {
+                    //starts the dealer card at three as the first two cards are already in the dealer's hand
                     dealerCard = 3;
                 }
                 else {
                     dealerCard++
                 }
-
+                //For Ace, Queen, King and Jack cards the values of these are set to 10 for adding together for total hand count. (yes ace is wrong for BlackJack rules)
                 if (newCard.Value == "ACE" || newCard.Value == "KING" || newCard.Value == "QUEEN" || newCard.Value == "JACK") {
                     newCard.Value = 10
                 }
 
+                //makes the newly drawn card visible to the user setting it in one of the user cards already defined in html
+                //There are 11 cards at that is is the max number of cards a user can draw in standard blackjack without going bust
                 document.getElementById("DealerCard" + dealerCard.toString()).src = newCard.Image;
 
                 var newCardIntValue = parseInt(newCard.Value);
 
                 dealerTotal = newCardIntValue + dealerTotal;
 
+
+                //check if the dealer has gone bust
                 if (dealerTotal > 21) {
                     document.getElementById("dealerHeader").style.backgroundColor = "red";
                     document.getElementById("dealerHeader").innerText = "Dealer Hand - Bust";
@@ -188,45 +216,53 @@
                     document.getElementById("dealerHeader").innerText = "Dealer Hand - " + dealerTotal.toString();
                 }
 
+                //calls the hold method which will check if the dealers hand is > 16 if not code will run this function again until the hand is > 16
                 hold();
             }
         })
     }   
 
+    //function calculates the user's probability of going bust
     function caculateBustProbability() {
+        //array containing all of the values of the 52 deck of cards returned by the api
         var deckValues = [2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
         var iCount = 0;
         var mergedValues = [];
 
+        //For each viewed card the value takes 1 version of out of the array where the value matches the value in the array
         viewedCards.forEach(function(value) {
             deckValues.splice(value, 1);
-           
+
+            //takes the value and merges them together into an array
             if (iCount != 0) {
                 mergedValues.push(value);
             }
-            
+            //increment count use for determining number of cards left in the deck
             iCount++;
         });
-
+        //Get a sum of the total values to get the total count of the user's hand
         var sumTotalValues = mergedValues.reduce(function (oldValue, newValue) {
             return oldValue + newValue;
         }, 0);
-
+        
+        //sum of total values is then taken off 21 to determine what value needs to be drawn to go bust
         var remainderToBust = 21 - sumTotalValues;
        
-
+        //filters the deckValues array and removes all the values that would not cause the user to go bust
         var filteredArray = deckValues.filter(function (value, index, arr) {
             return value > remainderToBust;
         });
 
+        //get the total number of unknown cards by removing the number of viewed cards from 52 total deck size
         var totalUnknownCards = 52 - iCount;
 
 
-
+        //divides the length of the filteredArray this is the number of cards that can be pulled that will cause the user to bust divided by the total unknown cards giving a decimal value
         var decimalToBust = filteredArray.length / totalUnknownCards;
-
+        //converts the decimalValue into a percentage to be shown to the user
         var percentage = (decimalToBust * 100).toFixed(1);
 
+        //outputs the total and percentage to go bust to the user 
         document.getElementById("userHeader").innerText = "User Hand - " + userTotal.toString() + " - Percentage to Bust - " + percentage.toString() + "%";
     }
 

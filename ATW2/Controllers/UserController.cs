@@ -23,12 +23,23 @@ namespace ATW2.Controllers
             _config = config;
             _logger = logger;
         }
-
+        //show login view
         public IActionResult Login()
         {
-            return View();
+            var session = HttpContext.Session.GetString("UserSession");
+
+            try
+            {
+                var userSession = JsonConvert.DeserializeObject<User>(session);
+                return RedirectToAction("BlackJackTable", "BlackJack");
+            }
+            catch
+            {
+                return View();
+            }
         }
 
+        //recieve login information and validate if okay, direct to blackjack api
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Login(string email, string password)
@@ -36,22 +47,24 @@ namespace ATW2.Controllers
             if(email == null || password == null)
             {
                 _logger.LogError("Parsed credentials are null");
-                return View("Error");
+                return View("PermissionsError");
             }
 
             if(!ValidateLogin(email, password))
             {
-                return View("Error");
+                return View("PermissionsError");
             }
                     
             return RedirectToAction("BlackJackTable", "BlackJack");
         }
 
+        //return logout view
         public IActionResult Logout()
         {
             return View();
         }
 
+        //Clears the user's session and takes the user back to the login screen
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Logout(string e)
@@ -61,11 +74,12 @@ namespace ATW2.Controllers
             return RedirectToAction("Login");
         }
 
+        //query the database, gets all the users and outputs them to a table on the manage view
         public IActionResult Manage()
         {
             if (!CheckAdmin())
             {
-                return View("Error");
+                return View("PermissionsError");
             }           
 
             var sqlQuery = "SELECT * FROM User";
@@ -106,24 +120,25 @@ namespace ATW2.Controllers
                 return View("error");
             }
         }
-
+        //return edit view and check user is an admin
         public IActionResult Edit()
         {
             if (!CheckAdmin())
             {
-                return View("Error");
+                return View("PermissionsError");
             }
 
             return View();
         }
 
+        //update the user record in the database from the user input on the view
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, string email, string password, UserRoleEnum role)
         {
             if (!CheckAdmin())
             {
-                return View("Error");
+                return View("PermissionsError");
             }
 
             if (email == "" || password == "" || role.ToString() == "")
@@ -138,23 +153,26 @@ namespace ATW2.Controllers
             return RedirectToAction("Manage");
         }
 
+
+        //check user is admin and returns create view
         public IActionResult Create()
         {
             if (!CheckAdmin())
             {
-                return View("Error");
+                return View("PermissionsError");
             }
 
             return View();
         }
 
+        //takes recieved information from view and inserts user record into database
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(string email, string password, UserRoleEnum role)
         {
             if (!CheckAdmin())
             {
-                return View("Error");
+                return View("PermissionsError");
             }
 
             if (email == "" || password == "" || role.ToString() == "")
@@ -168,24 +186,25 @@ namespace ATW2.Controllers
             }
             return RedirectToAction("Manage");
         }
-
+        //checks the user is an admin and returns the delete confirmation view 
         public IActionResult Delete(List<User> users)
         {
             if (!CheckAdmin())
             {
-                return View("Error");
+                return View("PermissionsError");
             }
 
             return View();
         }
 
+        //checks the user is an admin and deletes the chosen user record from the database
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
             if (!CheckAdmin())
             {
-                return View("Error");
+                return View("PermissionsError");
             }
 
             if (id == 0)
@@ -199,10 +218,10 @@ namespace ATW2.Controllers
             }
             return RedirectToAction("Manage");
         }
-
+        //checks the user's login details match what is in the database
         private bool ValidateLogin(string email, string password)
         {
-            var sqlQuery = "SELECT * FROM User WHERE Email = " +"'" + email + "'";
+            var sqlQuery = "SELECT * FROM User WHERE Email = @Email;";
 
             var serverConnection = _config.GetValue<string>("Database:Connection");
             MySqlConnection SqlConnection = new MySqlConnection(serverConnection);
@@ -211,6 +230,7 @@ namespace ATW2.Controllers
             {
                 SqlConnection.Open();
                 MySqlCommand sqlCommand = new MySqlCommand(sqlQuery, SqlConnection);
+                sqlCommand.Parameters.AddWithValue("@Email", email);
                 var result = sqlCommand.ExecuteReader();
 
                 User user = new User();
@@ -259,46 +279,46 @@ namespace ATW2.Controllers
         {
             var sqlQuery = "Update User SET";
 
-            if (email == "" || password == "" || role.ToString() == "")
+            if (email == "" && password == "" && role.ToString() == "" || email == null && password == null && role.ToString() == null)
             {
                 return false;
             }
 
-            if (email == "")
+            if (email != "" && email != null)
             {
-
+                sqlQuery += " Email= @Email,";
             }
-            else
+        
+            if (password != "" && password != null)
             {
-                sqlQuery += " Email=" + "'" + email + "'" + ",";
-            }
-
-            if (password == "")
-            {
-                
-            }
-            else
-            {
-                sqlQuery += " Password = " + "'" + password + "'" + ",";
+                sqlQuery += " Password = @Password,";
             }
 
-            if (role.ToString() == "")
+            if (role.ToString() != "" && role.ToString() != null)
             {
-
-            }
-            else
-            {
-                sqlQuery += " Role = " + "'" + role.ToString() + "'";
+                sqlQuery += " Role = @Role";
             }
 
-            sqlQuery += " WHERE Id =" + id;
+            sqlQuery += " WHERE Id = @Id";
 
             try
             {
-                ExcecuteSql(sqlQuery);
+                var serverConnection = _config.GetValue<string>("Database:Connection");
+                MySqlConnection SqlConnection = new MySqlConnection(serverConnection);
+
+                SqlConnection.Open();
+                MySqlCommand sqlCommand = new MySqlCommand(sqlQuery, SqlConnection);
+                sqlCommand.Parameters.AddWithValue("@Email", email);
+                sqlCommand.Parameters.AddWithValue("@Id", id);
+                sqlCommand.Parameters.AddWithValue("@Password", password);
+                sqlCommand.Parameters.AddWithValue("@Role", role.ToString());
+                var result = sqlCommand.ExecuteReader();
+                sqlCommand.Dispose();
+                SqlConnection.Close();             
             }
-            catch
+            catch (Exception exception)
             {
+                _logger.LogError("Sql Exception: ", exception);
                 return false;
             }
             
@@ -307,49 +327,54 @@ namespace ATW2.Controllers
 
         private bool DeleteUser(int id)
         {
-            var sqlQuery = "DELETE FROM User WHERE Id =" + id;
+            var sqlQuery = "DELETE FROM User WHERE Id = @Id";
 
             try
             {
-                ExcecuteSql(sqlQuery);
+                var serverConnection = _config.GetValue<string>("Database:Connection");
+                MySqlConnection SqlConnection = new MySqlConnection(serverConnection);
+
+                SqlConnection.Open();
+                MySqlCommand sqlCommand = new MySqlCommand(sqlQuery, SqlConnection);
+                sqlCommand.Parameters.AddWithValue("@Id", id);
+                var result = sqlCommand.ExecuteReader();
+                sqlCommand.Dispose();
+                SqlConnection.Close();
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
+                _logger.LogError("Sql Exception: ", exception);
                 return false;
             }
 
             return true;
         }
-
+        
         private bool InsertUser(string email, string password, UserRoleEnum role)
         {
-            var sqlQuery = "INSERT INTO User (Email, Password, Role) VALUES ('" + email + "'" + ", '" + password + "'" + ", '" + role.ToString() + "'" + ")";
-
-            ExcecuteSql(sqlQuery);
-
-            return true;
-        }
-
-        private void ExcecuteSql(string sqlQuery)
-        {
-            var serverConnection = _config.GetValue<string>("Database:Connection");
-            MySqlConnection SqlConnection = new MySqlConnection(serverConnection);
+            var sqlQuery = "INSERT INTO User (Email, Password, Role) VALUES (@Email, @Password,@Role)";
 
             try
             {
+                var serverConnection = _config.GetValue<string>("Database:Connection");
+                MySqlConnection SqlConnection = new MySqlConnection(serverConnection);
+
                 SqlConnection.Open();
                 MySqlCommand sqlCommand = new MySqlCommand(sqlQuery, SqlConnection);
+                sqlCommand.Parameters.AddWithValue("@Email", email);
+                sqlCommand.Parameters.AddWithValue("@Password", password);
+                sqlCommand.Parameters.AddWithValue("@Role", role.ToString());
                 var result = sqlCommand.ExecuteReader();
                 sqlCommand.Dispose();
                 SqlConnection.Close();
-                
             }
-            catch (MySqlException exception)
+            catch (Exception exception)
             {
                 _logger.LogError("Sql Exception: ", exception);
-                return;
+                return false;
             }
 
+            return true;
         }
 
         private bool CheckAdmin()

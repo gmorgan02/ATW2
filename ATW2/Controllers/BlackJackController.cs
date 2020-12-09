@@ -23,6 +23,7 @@ namespace ATW2.Controllers
         {
             var session = HttpContext.Session.GetString("UserSession");
 
+            //check the user is logged in
             try
             {
                 var userSession = JsonConvert.DeserializeObject<User>(session);

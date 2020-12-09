@@ -4,6 +4,7 @@ namespace ATW2.Models
 {
     public class Deck
     {
+        //set json property so that in the newtonsoft deserialize the data models across correctly
         [JsonProperty("success")]
         public bool Success { get; set; }
         [JsonProperty("deck_id")]

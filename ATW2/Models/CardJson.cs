@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ATW2.Models
 {
+    //model for the json that is returned for the deckofcards api 
     public class CardJson
     {
         [JsonProperty("success")]

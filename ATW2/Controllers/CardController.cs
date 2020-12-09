@@ -21,6 +21,7 @@ namespace ATW2.Controllers
             _config = config;
         }
         // GET: <CardController>
+        // gets the deck asyncronusly enable the webpage to still be interacted with during loading
         [HttpGet]
         public async Task<IEnumerable<string>> GetDeckAsync()
         {
@@ -38,21 +39,25 @@ namespace ATW2.Controllers
         }
 
         // GET <CardController>/{deckId}/draw
+        //draws two cards from the deck
         [HttpGet("{deckId}/draw/2")]
         public async Task<IEnumerable<string>> GetCardsAsync(string deckId)
         {
+            //makes the api call
             var client = new HttpClient();
             var ApiEndpoint = _config.GetValue<string>("Api:Url") + deckId + "/draw/?count=2";
             var response = await client.GetStringAsync(ApiEndpoint);
             
+            //gets the response and sets it up into the c# model
             CardJson cards = JsonConvert.DeserializeObject<CardJson>(response);
 
+            //check for success
             if (!cards.Success)
             {
                 return new string[] { "Error" };
             }
 
-
+            //assign result to card object that will be returned in an array string 
             Card card1 = new Card();
             Card card2 = new Card();
 
@@ -71,20 +76,24 @@ namespace ATW2.Controllers
 
         // GET <CardController>/{deckId}/draw
         [HttpGet("{deckId}/draw/1")]
+        //draws 1 card from the deck
         public async Task<IEnumerable<string>> GetCardAsync(string deckId)
         {
+            //makes the api call
             var client = new HttpClient();
             var ApiEndpoint = _config.GetValue<string>("Api:Url") + deckId + "/draw/?count=1";
             var response = await client.GetStringAsync(ApiEndpoint);
 
+            //maps the JSON response to c# model
             CardJson cards = JsonConvert.DeserializeObject<CardJson>(response);
 
+            //check result is okay
             if (!cards.Success)
             {
                 return new string[] { "Error" };
             }
 
-
+            //assign result to card object that will be returned in an array string 
             Card card1 = new Card();
 
             card1.Code = cards.Cards[0].Code;
