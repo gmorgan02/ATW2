@@ -1,16 +1,12 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "BlackJackView";
 }
-<head>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-</head>
 <h1>BlackJackTableView</h1>
 
 <div class="container">
     <div class="card">
         <div class="card-header" id="dealerHeader">Dealers Hand</div>
-        <div class="card-body"><img class="deckcard" id="DealerCard1" /><img class="deckcard" id="DealerCard2" /><img class="deckcard" id="DealerCard3" /><img class="deckcard" id="DealerCard4" /><img class="deckcard" id="DealerCard5" /><img class="deckcard" id="DealerCard6" /><img class="deckcard" id="DealerCard7" /><img class="deckcard" id="DealerCard8" /><img class="deckcard" id="DealerCard9" /><img class="deckcard" id="DealerCard10" /><img class="deckcard" id="DealerCard11" /></div>
+        <div class="card-body"><img class="deckcard" id="DealerCard1" /><img class="deckcard" id="DealerCard2" /><img class="deckcard" id="DealerCard3" /><img class="deckcard" id="DealerCard4" /><img class="deckcard" id="DealerCard5"  /><img class="deckcard" id="DealerCard6"  /><img class="deckcard" id="DealerCard7"  /><img class="deckcard" id="DealerCard8" /><img class="deckcard" id="DealerCard9"  /><img class="deckcard" id="DealerCard10"  /><img class="deckcard" id="DealerCard11" /></div>
     </div>
 
     <div class="card margin-top-5">
@@ -36,14 +32,14 @@
     $(document).ready(function () {
  
         $.ajax({
-            url: "https://localhost:44386/Card",
+            url: "/Card",
             type: "GET",
             success: function (result) {
                 deck = { Id: result[0], cardsRemaining: result[1], shuffled: result[2], success: result[3] };
 
                 $.ajax({
                     
-                    url: "https://localhost:44386/Card/" + deck.Id + "/draw/2",
+                    url: "/Card/" + deck.Id + "/draw/2",
                     type: "GET",
                     success: function (result) {
                         var dealerCard1 = { Code: result[0], Image: result[1], Suit: result[2], Value: result[3] }
@@ -69,7 +65,7 @@
 
                 $.ajax({
 
-                    url: "https://localhost:44386/Card/" + deck.Id + "/draw/2",
+                    url: "/Card/" + deck.Id + "/draw/2",
                     type: "GET",
                     success: function (result) {
                         var card1 = { Code: result[0], Image: result[1], Suit: result[2], Value: result[3] }
@@ -103,7 +99,7 @@
 
     function hitMe() {
         $.ajax({
-            url: "https://localhost:44386/Card/" + deck.Id + "/draw/1",
+            url: "/Card/" + deck.Id + "/draw/1",
             type: "GET",
             success: function (result) {
                 var newCard = { Code: result[0], Image: result[1], Suit: result[2], Value: result[3] }
@@ -161,7 +157,7 @@
 
     function dealerHitMe() {
         $.ajax({
-            url: "https://localhost:44386/Card/" + deck.Id + "/draw/1",
+            url: "/Card/" + deck.Id + "/draw/1",
             type: "GET",
             success: function (result) {
                 var newCard = { Code: result[0], Image: result[1], Suit: result[2], Value: result[3] }
