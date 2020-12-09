@@ -450,3 +450,4 @@ C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\User\Edit.cshtml.g
 C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\User\Create.cshtml.g.cs
 C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\User\Manage.cshtml.g.cs
 C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\User\Delete.cshtml.g.cs
+C:\Git.Projects\ATW2\ATW2\obj\Debug\netcoreapp3.1\Razor\Views\User\Logout.cshtml.g.cs

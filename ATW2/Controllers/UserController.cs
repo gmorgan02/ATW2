@@ -44,7 +44,21 @@ namespace ATW2.Controllers
                 return View("Error");
             }
                     
-            return RedirectToAction("BlackJackTable");
+            return RedirectToAction("BlackJackTable", "BlackJack");
+        }
+
+        public IActionResult Logout()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Logout(string e)
+        {           
+            HttpContext.Session.Clear();      
+
+            return RedirectToAction("Login");
         }
 
         public IActionResult Manage()
@@ -95,6 +109,11 @@ namespace ATW2.Controllers
 
         public IActionResult Edit()
         {
+            if (!CheckAdmin())
+            {
+                return View("Error");
+            }
+
             return View();
         }
 
@@ -102,6 +121,11 @@ namespace ATW2.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, string email, string password, UserRoleEnum role)
         {
+            if (!CheckAdmin())
+            {
+                return View("Error");
+            }
+
             if (email == "" || password == "" || role.ToString() == "")
             {
                 return View("Error");
@@ -116,6 +140,11 @@ namespace ATW2.Controllers
 
         public IActionResult Create()
         {
+            if (!CheckAdmin())
+            {
+                return View("Error");
+            }
+
             return View();
         }
 
@@ -123,7 +152,12 @@ namespace ATW2.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(string email, string password, UserRoleEnum role)
         {
-            if(email == "" || password == "" || role.ToString() == "")
+            if (!CheckAdmin())
+            {
+                return View("Error");
+            }
+
+            if (email == "" || password == "" || role.ToString() == "")
             {
                 return View("Error");
             }
@@ -136,7 +170,12 @@ namespace ATW2.Controllers
         }
 
         public IActionResult Delete(List<User> users)
-        {            
+        {
+            if (!CheckAdmin())
+            {
+                return View("Error");
+            }
+
             return View();
         }
 
@@ -144,6 +183,11 @@ namespace ATW2.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
+            if (!CheckAdmin())
+            {
+                return View("Error");
+            }
+
             if (id == 0)
             {
                 return View("Error");
@@ -312,16 +356,25 @@ namespace ATW2.Controllers
         {
             var session = HttpContext.Session.GetString("UserSession");
 
-            var userSession = JsonConvert.DeserializeObject<User>(session);
-
-            if (userSession.Role != UserRoleEnum.Admin)
+            try
             {
+                var userSession = JsonConvert.DeserializeObject<User>(session);
+                if (userSession.Role != UserRoleEnum.Admin)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Exception deserializing userSession: ", ex);
                 return false;
             }
-            else
-            {
-                return true;
-            }
+            
+            
         }
     }
 }

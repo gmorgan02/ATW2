@@ -1,87 +1,39 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using ATW2.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace ATW2.Controllers
 {
     public class BlackJackController : Controller
     {
+        private readonly ILogger<UserController> _logger;
+
+        public BlackJackController(ILogger<UserController> logger)
+        {
+            _logger = logger;
+        }
         // GET: BlackJackController
         public ActionResult BlackJackTable()
         {
-            return View();
-        }
+            var session = HttpContext.Session.GetString("UserSession");
 
-        // GET: BlackJackController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: BlackJackController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: BlackJackController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var userSession = JsonConvert.DeserializeObject<User>(session);
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                _logger.LogError("Exception deserializing userSession: ", ex);
+                return View("Error");
             }
-        }
 
-        // GET: BlackJackController/Edit/5
-        public ActionResult Edit(int id)
-        {
             return View();
-        }
-
-        // POST: BlackJackController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: BlackJackController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: BlackJackController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        }       
     }
 }

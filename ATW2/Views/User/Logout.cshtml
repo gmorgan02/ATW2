@@ -1,0 +1,15 @@
+﻿@model ATW2.Models.User
+
+@{
+    ViewData["Title"] = "Logout";
+}
+
+<h1>Logout</h1>
+
+<h3>Are you sure you want to Logout?</h3>
+<div>
+    <form asp-action="Logout">
+        <input type="submit" value="Logout" class="btn btn-danger" /> |
+        <a asp-controller="BlackJack" asp-action="BlackJack">Back to BlackJack</a>
+    </form>
+</div>
