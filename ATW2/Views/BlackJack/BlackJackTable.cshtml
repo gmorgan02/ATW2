@@ -9,33 +9,29 @@
 
 <div class="container">
     <div class="card">
-        <div class="card-header" id="head">Dealers Hand</div>
-        <div class="card-body"><img class="deckcard" id="DealerCard1" /><img class="deckcard" id="DealerCard2" /></div>
+        <div class="card-header" id="dealerHeader">Dealers Hand</div>
+        <div class="card-body"><img class="deckcard" id="DealerCard1" /><img class="deckcard" id="DealerCard2" /><img class="deckcard" id="DealerCard3" /><img class="deckcard" id="DealerCard4" /><img class="deckcard" id="DealerCard5" /><img class="deckcard" id="DealerCard6" /><img class="deckcard" id="DealerCard7" /><img class="deckcard" id="DealerCard8" /><img class="deckcard" id="DealerCard9" /><img class="deckcard" id="DealerCard10" /><img class="deckcard" id="DealerCard11" /></div>
     </div>
 
     <div class="card margin-top-5">
-        <div class="card-header" id="head">Your Hand</div>
+        <div class="card-header" id="userHeader">Your Hand</div>
         <div class="card-body"><img class="deckcard" id="UserCard1" /><img class="deckcard" id="UserCard2" /><img class="deckcard" id="UserCard3" /><img class="deckcard" id="UserCard4" /><img class="deckcard" id="UserCard5" /><img class="deckcard" id="UserCard6" /><img class="deckcard" id="UserCard7" /><img class="deckcard" id="UserCard8" /><img class="deckcard" id="UserCard9" /><img class="deckcard" id="UserCard10" /><img class="deckcard" id="UserCard11" /></div>
     </div>
 
     <input type="button" class="btn btn-primary" value="Hit Me" onclick="hitMe()" />
     <input type="button" class="btn btn-primary" value="Hold" onclick="hold()" />
 
-</div>
-
-TODO
-
-    Add values and blackjack rules (21 < bust) 2h
-    Track cards do percentage of bust chance (Number of unknown cards left that would make you go bust / Number of unknown cards) 2h
-    test plan 2h
-    bugs 2h
-    publish 2h 
-    
+</div>    
 
 <script>
     var deck;
     var userCard;
-    var card2;
+    var dealerCard;
+    var dealercard2;
+    var userTotal;
+    var dealerTotal;
+    var dealerCard1;
+    var viewedCards;
 
     $(document).ready(function () {
  
@@ -50,13 +46,24 @@ TODO
                     url: "https://localhost:44386/Card/" + deck.Id + "/draw/2",
                     type: "GET",
                     success: function (result) {
-                        var card1 = { Code: result[0], Image: result[1], Suit: result[2], Value: result[3] }
-                        card2 = { Code: result[4], Image: result[5], Suit: result[6], Value: result[7] }
+                        var dealerCard1 = { Code: result[0], Image: result[1], Suit: result[2], Value: result[3] }
+                        dealerCard2 = { Code: result[4], Image: result[5], Suit: result[6], Value: result[7] }
 
-                        document.getElementById("DealerCard1").src = card1.Image;
+                        if (dealerCard1.Value == "ACE" || dealerCard1.Value == "KING" || dealerCard1.Value == "QUEEN" || dealerCard1.Value == "JACK") {
+                            dealerCard1.Value = 10
+                        }
+                        if (dealerCard2.Value == "ACE" || dealerCard2.Value == "KING" || dealerCard2.Value == "QUEEN" || dealerCard2.Value == "JACK") {
+                            dealerCard2.Value = 10
+                        }
 
-                        console.log(card1.Value);
-                        console.log(card2.Value);
+                        document.getElementById("DealerCard1").src = dealerCard1.Image;
+
+                        var card1IntValue = parseInt(dealerCard1.Value);
+                        var card2IntValue = parseInt(dealerCard2.Value);
+
+                        viewedCards = [card1IntValue];
+
+                        dealerTotal = card1IntValue + card2IntValue;
                     }
                 })            
 
@@ -70,8 +77,24 @@ TODO
 
                         document.getElementById("UserCard1").src = card1.Image;
                         document.getElementById("UserCard2").src = card2.Image;
-                        console.log(card1.Value);
-                        console.log(card2.Value);
+                       
+
+                        if (card1.Value == "ACE" || card1.Value == "KING" || card1.Value == "QUEEN" || card1.Value == "JACK") {
+                            card1.Value = 10
+                        }
+                        if (card2.Value == "ACE" || card2.Value == "KING" || card2.Value == "QUEEN" || card2.Value == "JACK") {
+                            card2.Value = 10
+                        }
+
+                        var card1IntValue = parseInt(card1.Value);
+                        var card2IntValue = parseInt(card2.Value);
+
+                        userTotal = card1IntValue + card2IntValue;
+
+                        viewedCards.push(card1IntValue, card2IntValue);
+
+                        document.getElementById("userHeader").innerText = "Your Hand - " + userTotal.toString();
+                        caculateBustProbability();
                     }
                 })   
             }
@@ -92,22 +115,123 @@ TODO
                 else {
                     userCard++
                 }
-                newCard.Value
+
+                if (newCard.Value == "ACE" || newCard.Value == "KING" || newCard.Value == "QUEEN" || newCard.Value == "JACK") {
+                    newCard.Value = 10
+                }
 
                 document.getElementById("UserCard" + userCard.toString()).src = newCard.Image;
 
+                var userHandText = document.getElementById("userHeader").innerText;
+
+                var matches = userHandText.match(/(\d+)/);
+
+                var userTotal = parseInt(matches[0]);
+                var newCardIntValue = parseInt(newCard.Value);
+
+                userTotal = newCardIntValue + userTotal;
+
+                viewedCards.push(newCardIntValue);
+
+                if (userTotal > 21) {
+                    document.getElementById("userHeader").style.backgroundColor = "red";
+                    document.getElementById("userHeader").innerText = "Your Hand - Bust";
+                    hold();
+                }
+                else {
+                    document.getElementById("userHeader").innerText = "Your Hand - " + userTotal.toString();
+                    caculateBustProbability();
+                }
             }
-        })   
-    }
+        })
+    } 
 
     function hold() {
-        document.getElementById("DealerCard2").src = card2.Image;
+        document.getElementById("DealerCard2").src = dealerCard2.Image;
+
+        if (dealerTotal < 16) {
+            document.getElementById("dealerHeader").innerText = "Dealer Hand - " + dealerTotal.toString();
+            dealerHitMe();
+        }
+
+        document.getElementById("dealerHeader").innerText = "Dealer Hand - " + dealerTotal.toString();
 
         setTimeout(() => { location.reload(); }, 5000);
     }
 
-    function dealerTotal() {
+    function dealerHitMe() {
+        $.ajax({
+            url: "https://localhost:44386/Card/" + deck.Id + "/draw/1",
+            type: "GET",
+            success: function (result) {
+                var newCard = { Code: result[0], Image: result[1], Suit: result[2], Value: result[3] }
 
+
+                if (dealerCard == null) {
+                    dealerCard = 3;
+                }
+                else {
+                    dealerCard++
+                }
+
+                if (newCard.Value == "ACE" || newCard.Value == "KING" || newCard.Value == "QUEEN" || newCard.Value == "JACK") {
+                    newCard.Value = 10
+                }
+
+                document.getElementById("DealerCard" + dealerCard.toString()).src = newCard.Image;
+
+                var newCardIntValue = parseInt(newCard.Value);
+
+                dealerTotal = newCardIntValue + dealerTotal;
+
+                if (dealerTotal > 21) {
+                    document.getElementById("dealerHeader").style.backgroundColor = "red";
+                    document.getElementById("dealerHeader").innerText = "Dealer Hand - Bust";
+                }
+                else {
+                    document.getElementById("dealerHeader").innerText = "Dealer Hand - " + dealerTotal.toString();
+                }
+
+                hold();
+            }
+        })
+    }   
+
+    function caculateBustProbability() {
+        var deckValues = [2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
+        var iCount = 0;
+        var mergedValues = [];
+
+        viewedCards.forEach(function(value) {
+            deckValues.splice(value, 1);
+           
+            if (iCount != 0) {
+                mergedValues.push(value);
+            }
+            
+            iCount++;
+        });
+
+        var sumTotalValues = mergedValues.reduce(function (oldValue, newValue) {
+            return oldValue + newValue;
+        }, 0);
+
+        var remainderToBust = 21 - sumTotalValues;
+       
+
+        var filteredArray = deckValues.filter(function (value, index, arr) {
+            return value > remainderToBust;
+        });
+
+        var totalUnknownCards = 52 - iCount;
+
+
+
+        var decimalToBust = filteredArray.length / totalUnknownCards;
+
+        var percentage = (decimalToBust * 100).toFixed(1);
+
+        document.getElementById("userHeader").innerText = "User Hand - " + userTotal.toString() + " - Percentage to Bust - " + percentage.toString() + "%";
     }
 
 </script>

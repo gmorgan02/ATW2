@@ -86,7 +86,6 @@ namespace ATW2.Controllers
 
 
             Card card1 = new Card();
-            Card card2 = new Card();
 
             card1.Code = cards.Cards[0].Code;
             card1.Image = cards.Cards[0].Image;
